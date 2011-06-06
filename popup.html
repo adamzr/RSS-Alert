@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+</script>
+    <style type="text/css" >
+    li {
+        white-space: nowrap;
+    }
+    </style>
+    <title>
+      Add Feeds
+    </title>
+  </head>
+  <body>
+    <label for="url">Feed URL:</label>
+    <form>
+      <input type="url" id="url"> <input type="button" id="add" value="Add">
+    </form>
+    <p id="heading">
+      There are no feeds being monitored.
+    </p>
+    <ul id="list"></ul>
+    <script type="text/javascript">
+    //Preload the list
+    for(index in chrome.extension.getBackgroundPage().RN.feedURLs){
+        var feedURL = chrome.extension.getBackgroundPage().RN.feedURLs[index];
+        $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
+    }
+    //Update the heading to say "Feeds", "Feed", or none depends on the number of feeds in the list
+    updateHeading();
+    
+    //Handle adding a feed
+    $("#add").click(function(){
+        var feedURL = $("#url").val()
+        chrome.extension.getBackgroundPage().addFeed(feedURL);
+        $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
+        updateHeading();
+    });
+
+    //Handle removing a feed from the list
+    $(".delete").live("click", function(){
+        var feedURL = $(this).data("feed");
+        chrome.extension.getBackgroundPage().removeFeed(feedURL);
+        $(this).parent("li").fadeOut().remove();
+        updateHeading();
+    });
+    
+    //Update the heading with coreect wording for 0, 1, or more feeds
+    function updateHeading(){
+        var feedCount = chrome.extension.getBackgroundPage().RN.feedURLs.length;
+        var message = "There are no feeds being monitored.";
+        if(feedCount === 1){
+            message = "Feed being monitored:"
+        }
+        if(feedCount > 1){
+            message = "Feeds being monitored:"
+        }
+        $("#heading").html(message);
+    }
+    </script>
+  </body>
+</html>
