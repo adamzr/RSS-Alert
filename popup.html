@@ -1,75 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    <head>
+        <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>
+            Add Feeds
+        </title>
+    </head>
+    <body>
+        <p>
+            <label for="url">Feed URL:</label>
+        </p>
+        <form>
+            <input type="url" id="url"> <input type="button" id="add" value="Add">
+        </form>
+        <p id="heading">
+            There are no feeds being monitored.
+        </p>
+        <ul id="list"></ul><script src="jquery-2.0.2.min.js" type="text/javascript">
+</script><script src="popup.js" type="text/javascript">
 </script>
-    <style type="text/css" >
-    li {
-        white-space: nowrap;
-    }
-    </style>
-    <title>
-      Add Feeds
-    </title>
-  </head>
-  <body>
-     <script>
-     var _gaq = _gaq || [];
-     _gaq.push(['_setAccount', 'UA-16826446-5']);
-     _gaq.push(['_trackPageview']);
-
-     (function() {
-       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-       ga.src = 'https://ssl.google-analytics.com/ga.js';
-       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-     })();
-   </script>
-    <label for="url">Feed URL:</label>
-    <form>
-      <input type="url" id="url"> <input type="button" id="add" value="Add">
-    </form>
-    <p id="heading">
-      There are no feeds being monitored.
-    </p>
-    <ul id="list"></ul>
-    <script type="text/javascript">
-    //Preload the list
-    for(index in chrome.extension.getBackgroundPage().RN.feedURLs){
-        var feedURL = chrome.extension.getBackgroundPage().RN.feedURLs[index];
-        $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
-    }
-    //Update the heading to say "Feeds", "Feed", or none depends on the number of feeds in the list
-    updateHeading();
-    
-    //Handle adding a feed
-    $("#add").click(function(){
-        var feedURL = $("#url").val()
-        chrome.extension.getBackgroundPage().addFeed(feedURL);
-        $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
-        updateHeading();
-    });
-
-    //Handle removing a feed from the list
-    $(".delete").live("click", function(){
-        var feedURL = $(this).data("feed");
-        chrome.extension.getBackgroundPage().removeFeed(feedURL);
-        $(this).parent("li").fadeOut().remove();
-        updateHeading();
-    });
-    
-    //Update the heading with coreect wording for 0, 1, or more feeds
-    function updateHeading(){
-        var feedCount = chrome.extension.getBackgroundPage().RN.feedURLs.length;
-        var message = "There are no feeds being monitored.";
-        if(feedCount === 1){
-            message = "Feed being monitored:"
-        }
-        if(feedCount > 1){
-            message = "Feeds being monitored:"
-        }
-        $("#heading").html(message);
-    }
-    </script>
-  </body>
+    </body>
 </html>

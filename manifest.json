@@ -1,6 +1,7 @@
 {
   "name": "RSS Alert",
-  "version": "0.1",
+  "version": "0.2",
+  "manifest_version": 2,
   "description": "Notifies user of new posts in RSS feeds",
   "icons": {
     "128": "128.png",
@@ -12,11 +13,16 @@
     "default_title": "RSS Alert",      // optional; shown in tooltip
     "default_popup": "popup.html"        // optional
   },
-  "background_page": "background.html",
+  "background":{
+      "persistent": true,
+      "page" : "background.html"
+  } ,
+  "content_security_policy": "script-src 'self' https://www.google.com https://ssl.google-analytics.com; object-src 'self'",
+  "homepage_url": "https://github.com/adamzr/RSS-Alert",
   "permissions": [
     "notifications",
     "https://www.google.com/*",
-    "https://ajax.googleapis.com/*",
+    "https://ssl.google-analytics.com/*",
     "unlimitedStorage"
   ]
 }
