@@ -1,6 +1,6 @@
 {
   "name": "RSS Alert",
-  "version": "0.2",
+  "version": "0.3",
   "manifest_version": 2,
   "description": "Notifies user of new posts in RSS feeds",
   "icons": {
@@ -23,6 +23,7 @@
     "notifications",
     "https://www.google.com/*",
     "https://ssl.google-analytics.com/*",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "storage"
   ]
 }

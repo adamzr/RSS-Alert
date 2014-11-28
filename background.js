@@ -5,32 +5,42 @@ window.RN = RN;
 //Interval that we use to check feeds
 RN.interval = 30000;
 
+//Maximum length of list of seen posts
+RN.MAX_SEEN_LENGTH = 1000;
+
 //Load the Google Feeds API
 google.load("feeds", "1");
 
 //Load the list of posts we've seen  
-RN.seen = localStorage["seen"];
-if(!RN.seen){
-    RN.seen = [];
-}
-else{
-    RN.seen = JSON.parse(RN.seen);
-}
+chrome.storage.sync.get("seen", function(items){
+    if(items.seen){
+        RN.seen = items.seen;
+    } else {
+        RN.seen = [];
+    }
+})
+
+// Map of notification IDs to the URLs to open when they are clicked
+RN.notificationToUrl = {};
 
 //Add a post to the list of posts we've seen
 function addSeen(id){
     RN.seen.push(id);
+    if(RN.seen.length > RN.MAX_SEEN_LENGTH){
+        RN.seen.shift();
+    }
+    chrome.storage.sync.set({"seen": RN.seen});
     localStorage["seen"] = JSON.stringify(RN.seen);
 }
 
 //Load a list of feed URLs we're monitoring
-RN.feedURLs = localStorage["feedURLs"];
-if(!RN.feedURLs){
-    RN.feedURLs = [];
-}
-else{
-    RN.feedURLs = JSON.parse(RN.feedURLs);
-}
+chrome.storage.sync.get("feedURLs", function(items){
+    if(items["feedURLs"]){
+        RN.feedURLs = items["feedURLs"];
+    } else {
+        RN.feedURLs = [];
+    }
+})
 
 //List of feeds
 RN.feeds = [];
@@ -49,14 +59,14 @@ function addFeed(feedURL){
     if(RN.feedURLs.length > 100000){
         RN.feedURLs.splice(0, RN.feedURLs.length - 100000);
     }
-    localStorage["feedURLs"] = JSON.stringify(RN.feedURLs);
+    chrome.storage.sync.set({"feedURLs": RN.feedURLs});
 }
 
 //Remove a feed from the list of feeds we are monitoring
 function removeFeed(feedURL){
     RN.feedURLs = RN.feedURLs.filter(function(element){ return (element !== feedURL);});
     RN.feeds = RN.feeds.filter(function(element){ return (element.O !== feedURL);});
-    localStorage["feedURLs"] = JSON.stringify(RN.feedURLs);
+    chrome.storage.sync.set({"feedURLs": RN.feedURLs});
 }
 
 //Check a feed for new posts (feed onLoad callback)
@@ -80,10 +90,23 @@ function onFeedLoad(result){
 
 //Send a notification about a new post (feed entry)
 function sendNotification(entry){
-    var notification = webkitNotifications.createHTMLNotification(
-        'notification.html?title=' + encodeURIComponent(entry.title) + '&url=' + encodeURIComponent(entry.link) + '&post=' + encodeURIComponent(entry.content) + '&byline=' + encodeURIComponent("Posted on " + entry.publishedDate)
-    );
-    notification.show();
+    chrome.notifications.create('',{
+        title: entry.title,
+        type: 'basic',
+        iconUrl: '128.png',
+        message: strip(entry.content).trim(),
+        contextMessage: "Posted on " + entry.publishedDate,
+        isClickable: true
+    }, function(notificationID){
+        RN.notificationToUrl[notificationID] = entry.link;
+    });
+}
+
+function strip(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
 }
       
 //The index of the feed in the feed list to check on the next run
@@ -100,10 +123,15 @@ function loadFeed(){
     setTimeout(loadFeed, RN.interval);
 }
 
+function onNotificationClick(notificationID){
+    chrome.tabs.create({url: RN.notificationToUrl[notificationID]});
+}
+
 //Initialize the feeds and start the regular monitoring
 function start(){
     initializeFeeds();
     loadFeed();
+    chrome.notifications.onClicked.addListener(onNotificationClick);
     console.log("Started checking feeds...");
 }
 
