@@ -1,12 +1,19 @@
-h1. RSS Alert
+# RSS Alert
 
 RSS Alert is a Google Chrome extension. Users can click on the RSS Alert icon next to the omnibox and a bubble will open where they can enter the URLs of RSS, Atom, or Media RSS feeds to monitor. They can also stop monitoring feeds they've added earlier. When a monitored feed has a new post, you get an Desktop Notification.
 
-h2. Technologies
+## Technologies
 
-We use Google Feeds API to monitor feeds. jQuery is used mostly to create the talk bubble UI. HTML5 localStorage is used to save data between browser sessions. HTML5 Desktop Notifications (as implemented by WebKit) are used for the notifications.
+The following technologies are being used:
+ - Google Feeds API
+ - jQuery
+ - Twitter Bootstrap
+ - Google Chrome Extension APIs
+   - Create new tab
+   - Storage
+   - Rich notifications
 
-h2. Thank you
+## Thank you
 
 "Icons by: FastIcon.com":http://www.fasticon.com
 "Thank you to TechEmpower!":http://www.techempower.com

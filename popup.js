@@ -11,7 +11,7 @@ _gaq.push(['_trackPageview']);
 //Preload the list
 for(index in chrome.extension.getBackgroundPage().RN.feedURLs){
     var feedURL = chrome.extension.getBackgroundPage().RN.feedURLs[index];
-    $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
+    $("#list").append("<li class='list-group-item feed-item'>" + "<button class='btn btn-danger btn-xs delete' data-feed='" + feedURL + "' >Remove</button>" + feedURL  + "</li>");
 }
 //Update the heading to say "Feeds", "Feed", or none depends on the number of feeds in the list
 updateHeading();
@@ -20,7 +20,7 @@ updateHeading();
 $("#add").click(function(){
     var feedURL = $("#url").val()
     chrome.extension.getBackgroundPage().addFeed(feedURL);
-    $("#list").append("<li style='cursor: pointer;'>" + feedURL + "<img class='delete' data-feed='" + feedURL + "' src='x.png'></li>");
+    $("#list").append("<li class='list-group-item feed-item'>" + "<button class='btn btn-danger btn-xs delete' data-feed='" + feedURL + "' >Remove</button>" + feedURL  + "</li>");
     updateHeading();
     _gaq.push(['_trackEvent', 'addFeed', 'clicked']);
 });

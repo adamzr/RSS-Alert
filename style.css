@@ -1,43 +1,15 @@
-li {
-    white-space: nowrap;
+.popup {
+    margin-top: 15px;
 }
 
-div.recentpost
-{
-  border: 1px solid #C8C0C0;
-  padding: 5px;
-  margin-bottom: 10px;
-  background-color: rgb(250,252,254);
-  background-image: -moz-linear-gradient(top, rgb(245,247,249), rgb(253,254,255));
-  background-image: -webkit-gradient(linear, center top, center bottom, from(rgb(245,247,249)), to(rgb(253,254,255)));
-  word-wrap: break-word;
+.feed-item {
+    white-space: nowrap; 
 }
 
-div.recentpost div.title
-{
-  font-size: 12px;
-  font-weight: bold;
+.delete {
+    margin-right: 10px;
 }
 
-div.recentpost div.byline
-{
-  color: #888080;
-  font-size: 10px;
-}
-
-div.recentpost div.byline a
-{
-  color: inherit;
-}
-
-div.recentpost div.title a,
-div.recentpost div.byline a
-{
-  text-decoration: none;
-}
-
-div.recentpost div.title a:hover,
-div.recentpost div.byline a:hover
-{
-  text-decoration: underline;
+.url {
+    min-width: 150px;
 }

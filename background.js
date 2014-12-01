@@ -26,17 +26,18 @@ RN.notificationToUrl = {};
 //Add a post to the list of posts we've seen
 function addSeen(id){
     RN.seen.push(id);
-    if(RN.seen.length > RN.MAX_SEEN_LENGTH){
+    while(JSON.stringify(RN.seen).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM){
         RN.seen.shift();
     }
     chrome.storage.sync.set({"seen": RN.seen});
-    localStorage["seen"] = JSON.stringify(RN.seen);
 }
 
 //Load a list of feed URLs we're monitoring
 chrome.storage.sync.get("feedURLs", function(items){
     if(items["feedURLs"]){
         RN.feedURLs = items["feedURLs"];
+    } else if(localStorage["feedURLs"]){
+        RN.feedURLs = JSON.parse(localStorage["feedURLs"]);
     } else {
         RN.feedURLs = [];
     }
@@ -54,6 +55,7 @@ function initializeFeeds(){
 
 //Add a feed to the list of feeds we are monitoring
 function addFeed(feedURL){
+    feedURL = feedURL.trim();
     RN.feeds.push(new google.feeds.Feed(feedURL));
     RN.feedURLs.push(feedURL);
     if(RN.feedURLs.length > 100000){
@@ -78,7 +80,7 @@ function onFeedLoad(result){
             var entry = result.feed.entries[i];
             //If we have not seen this post
             if(RN.seen.indexOf(entry.link) < 0){
-                sendNotification(entry);
+                sendNotification(entry, result.feed);
                 addSeen(entry.link);
             }
         }
@@ -89,13 +91,13 @@ function onFeedLoad(result){
 }
 
 //Send a notification about a new post (feed entry)
-function sendNotification(entry){
+function sendNotification(entry, feed){
     chrome.notifications.create('',{
         title: entry.title,
         type: 'basic',
         iconUrl: '128.png',
         message: strip(entry.content).trim(),
-        contextMessage: "Posted on " + entry.publishedDate,
+        contextMessage: feed.title,
         isClickable: true
     }, function(notificationID){
         RN.notificationToUrl[notificationID] = entry.link;
